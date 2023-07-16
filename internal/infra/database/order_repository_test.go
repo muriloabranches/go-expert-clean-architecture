@@ -49,3 +49,34 @@ func (suite *OrderRepositoryTestSuite) TestGivenAnOrder_WhenSave_ThenShouldSaveO
 	suite.Equal(order.Tax, orderResult.Tax)
 	suite.Equal(order.FinalPrice, orderResult.FinalPrice)
 }
+
+func (suite *OrderRepositoryTestSuite) TestFindAll_WhenExecute_ThenShouldReturnAllOrders() {
+	order1, err := entity.NewOrder("order1", 10.0, 2.0)
+	suite.NoError(err)
+	suite.NoError(order1.CalculateFinalPrice())
+
+	order2, err := entity.NewOrder("order2", 15.0, 5.0)
+	suite.NoError(err)
+	suite.NoError(order2.CalculateFinalPrice())
+
+	repo := NewOrderRepository(suite.Db)
+	err = repo.Save(order1)
+	suite.NoError(err)
+
+	err = repo.Save(order2)
+	suite.NoError(err)
+
+	ordersResult, err := repo.FindAll()
+	suite.NoError(err)
+
+	suite.NotEmpty(ordersResult)
+	suite.Len(ordersResult, 2)
+	suite.Equal(order1.ID, ordersResult[0].ID)
+	suite.Equal(order1.Price, ordersResult[0].Price)
+	suite.Equal(order1.Tax, ordersResult[0].Tax)
+	suite.Equal(order1.FinalPrice, ordersResult[0].FinalPrice)
+	suite.Equal(order2.ID, ordersResult[1].ID)
+	suite.Equal(order2.Price, ordersResult[1].Price)
+	suite.Equal(order2.Tax, ordersResult[1].Tax)
+	suite.Equal(order2.FinalPrice, ordersResult[1].FinalPrice)
+}
