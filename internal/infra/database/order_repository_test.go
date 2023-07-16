@@ -23,8 +23,9 @@ func (suite *OrderRepositoryTestSuite) SetupSuite() {
 	suite.Db = db
 }
 
-func (suite *OrderRepositoryTestSuite) TearDownTest() {
-	suite.Db.Close()
+func (suite *OrderRepositoryTestSuite) TearDownSuite() {
+	defer suite.Db.Close()
+	suite.Db.Exec("DROP TABLE orders")
 }
 
 func TestSuite(t *testing.T) {
